@@ -1,0 +1,61 @@
+[recipe]
+repo = "VigineUnitTest"
+variants = ["debug", "release"]
+owns = ["googletest"]
+
+[[dependency]]
+repo = "googletest"
+path = "external/googletest"
+branch = "vigine/main"
+commit = "8736d2cd5c1dcba41170ed2fddca14021d4916c3"
+
+[settings.common]
+CMAKE_C_VISIBILITY_PRESET = "hidden"
+CMAKE_CXX_VISIBILITY_PRESET = "hidden"
+CMAKE_VISIBILITY_INLINES_HIDDEN = "ON"
+CMAKE_POSITION_INDEPENDENT_CODE = "ON"
+BUILD_SHARED_LIBS = "OFF"
+CMAKE_CXX_STANDARD = "23"
+CMAKE_CXX_STANDARD_REQUIRED = "ON"
+CMAKE_CXX_EXTENSIONS = "OFF"
+
+[settings.macos]
+CMAKE_SHARED_LINKER_FLAGS = "-Wl,-dead_strip"
+
+[settings.windows]
+CMAKE_SHARED_LINKER_FLAGS = "/OPT:REF"
+
+[settings.linux]
+CMAKE_SHARED_LINKER_FLAGS = "-Wl,--exclude-libs,ALL"
+
+[[step]]
+id = "configure-posix"
+variant = "both"
+systems = ["macos", "linux"]
+run = "cmake -S {repo_root} -B build/{variant} -G Ninja -DCMAKE_BUILD_TYPE={variant} -DCMAKE_CXX_COMPILER={compiler} -DCMAKE_C_COMPILER=$(dirname {compiler})/clang {settings}"
+why = "One build folder per variant; the C compiler is the one beside our C++ compiler, because googletest's configuration checks for threads in C."
+
+[[step]]
+id = "configure-windows"
+variant = "both"
+systems = ["windows"]
+run = "cmake -S {repo_root} -B build/{variant} -G Ninja -DCMAKE_BUILD_TYPE={variant} -DCMAKE_CXX_COMPILER={compiler} -DCMAKE_C_COMPILER={compiler} {settings}"
+why = "One build folder per variant; the compiler driver on Windows is one program for C and C++."
+
+[[step]]
+id = "build"
+variant = "both"
+run = "cmake --build build/{variant}"
+why = "Builds googletest, googlemock, our library and VigineUnitTest's own tests."
+
+[[step]]
+id = "test"
+variant = "both"
+run = "ctest --test-dir build/{variant} --output-on-failure --output-junit test-results/ctest.xml"
+why = "A recipe repository runs its tests as a recipe step, so the passport records the run; the JUnit file lands in build/{variant}/test-results."
+
+[[rule]]
+text = "googletest is built only here; the repositories that test with our interface find it through the installed package."
+
+[[rule]]
+text = "gtest_force_shared_crt is ON in CMakeLists.txt so the Windows build uses the DLL runtime like the other Vigine builds."

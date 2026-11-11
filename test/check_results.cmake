@@ -1,0 +1,32 @@
+# Runs the test program the way the library's main is meant to be used and checks where the XML lands.
+set(missingFolder "${RESULTS_FOLDER}-missing")
+file(REMOVE_RECURSE "${RESULTS_FOLDER}" "${missingFolder}")
+file(MAKE_DIRECTORY "${RESULTS_FOLDER}")
+
+set(ENV{VIGINE_UNITTEST_RESULTS} "${RESULTS_FOLDER}")
+execute_process(COMMAND "${TEST_PROGRAM}" --gtest_filter=ExpectFamily.TrueAndFalse
+    RESULT_VARIABLE runResult OUTPUT_VARIABLE runOutput ERROR_VARIABLE runError)
+if(NOT runResult EQUAL 0)
+    message(FATAL_ERROR "the test program failed (${runResult}): ${runOutput} ${runError}")
+endif()
+file(GLOB xmlFiles "${RESULTS_FOLDER}/*.xml")
+list(LENGTH xmlFiles xmlCount)
+if(NOT xmlCount EQUAL 1)
+    message(FATAL_ERROR "expected one XML file in ${RESULTS_FOLDER}, found: ${xmlFiles}")
+endif()
+file(READ "${xmlFiles}" xmlText)
+if(NOT xmlText MATCHES "<testsuites" OR NOT xmlText MATCHES "TrueAndFalse")
+    message(FATAL_ERROR "the XML in ${xmlFiles} does not hold the run: ${xmlText}")
+endif()
+string(ASCII 27 escapeCharacter)
+string(FIND "${runOutput}" "${escapeCharacter}" escapePosition)
+if(NOT escapePosition EQUAL -1)
+    message(FATAL_ERROR "the output carries colour codes")
+endif()
+
+set(ENV{VIGINE_UNITTEST_RESULTS} "${missingFolder}")
+execute_process(COMMAND "${TEST_PROGRAM}" --gtest_filter=ExpectFamily.TrueAndFalse
+    RESULT_VARIABLE refusedResult OUTPUT_VARIABLE refusedOutput ERROR_VARIABLE refusedError)
+if(refusedResult EQUAL 0 OR NOT refusedError MATCHES "not an existing folder")
+    message(FATAL_ERROR "a missing results folder was not refused (${refusedResult}): ${refusedError}")
+endif()
