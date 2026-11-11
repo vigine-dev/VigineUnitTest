@@ -16,16 +16,16 @@ The interface itself is not written yet; the folders `include/vigine/unittest`,
 
 ## How to use it
 
-A repository that needs tests takes VigineUnitTest as a submodule and links its
-test target against it. Until the interface lands there is nothing to link yet.
+A repository does not take VigineUnitTest as a submodule. VigineUnitTest is
+built once in its own folder and installed into `<vigine root>/install/<variant>`
+(`~/vigine/install` on Mac and Ubuntu, `D:/work/project/install` on Windows). A
+repository finds it there with `find_package(VigineUnitTest)` and writes its
+tests with our interface; the interface comes in the next step. It never
+includes googletest directly.
 
 ## How to build it
 
-```sh
-git clone --recursive https://github.com/vigine-dev/VigineUnitTest.git
-cmake -S VigineUnitTest -B build -DCMAKE_BUILD_TYPE=Debug
-cmake --build build
-ctest --test-dir build
-```
-
-Requires a C++23 compiler.
+It is built by its recipe, `vigine.build.toml`, through the build step (the
+recipe comes with the interface). The build goes into `build/debug` and
+`build/release` with our compiler, and the result is installed into
+`install/<variant>`.
