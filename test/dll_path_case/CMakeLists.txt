@@ -1,0 +1,4 @@
+add_subdirectory(library)
+
+vigine_unit_add_tests(vigine_dllpath_case SOURCES dllpathcase.cpp)
+target_link_libraries(vigine_dllpath_case PRIVATE vigine_dllpath_probe)
