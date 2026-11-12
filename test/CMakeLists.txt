@@ -9,3 +9,5 @@ add_test(NAME results_land_in_the_folder
         -DTEST_PROGRAM=$<TARGET_FILE:vigine_unittest_selftests>
         -DRESULTS_FOLDER=${CMAKE_BINARY_DIR}/test-results/xml-check
         -P ${CMAKE_CURRENT_SOURCE_DIR}/check_results.cmake)
+
+add_subdirectory(dll_path_case)
