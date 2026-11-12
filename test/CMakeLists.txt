@@ -1,6 +1,7 @@
 vigine_unit_add_tests(vigine_unittest_selftests SOURCES
     macros_expect.cpp
     macros_assert.cpp
+    macros_compare.cpp
     fixture.cpp)
 
 add_test(NAME results_land_in_the_folder
