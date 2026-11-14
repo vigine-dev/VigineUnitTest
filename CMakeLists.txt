@@ -30,7 +30,7 @@ foreach(googletestTarget gtest gmock)
         "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/external/googletest/googletest/include;${PROJECT_SOURCE_DIR}/external/googletest/googlemock/include>;$<INSTALL_INTERFACE:${VIGINE_UNITTEST_THIRDPARTY_DIR}>")
 endforeach()
 
-add_library(vigine_unittest STATIC src/unittestmain.cpp)
+add_library(vigine_unittest STATIC src/unittestrun.cpp src/unittestmain.cpp)
 add_library(vigine::unittest ALIAS vigine_unittest)
 set_target_properties(vigine_unittest PROPERTIES EXPORT_NAME unittest)
 target_include_directories(vigine_unittest PUBLIC
@@ -40,7 +40,7 @@ target_link_libraries(vigine_unittest PUBLIC gtest gmock)
 
 install(TARGETS vigine_unittest gtest gmock EXPORT VigineUnitTestTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(FILES include/vigine/unittest/unittest.h
+install(FILES include/vigine/unittest/unittest.h include/vigine/unittest/main.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vigine/unittest)
 install(DIRECTORY external/googletest/googletest/include/gtest
     DESTINATION ${VIGINE_UNITTEST_THIRDPARTY_DIR})

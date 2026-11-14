@@ -12,3 +12,5 @@ add_test(NAME results_land_in_the_folder
         -P ${CMAKE_CURRENT_SOURCE_DIR}/check_results.cmake)
 
 add_subdirectory(dll_path_case)
+
+vigine_unit_add_tests(vigine_unittest_own_main SOURCES own_main.cpp)
