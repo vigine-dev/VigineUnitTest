@@ -3,7 +3,8 @@ vigine_unit_add_tests(vigine_unittest_selftests SOURCES
     macros_assert.cpp
     macros_compare.cpp
     macros_param.cpp
-    fixture.cpp)
+    fixture.cpp
+    helpers.cpp)
 
 add_test(NAME results_land_in_the_folder
     COMMAND ${CMAKE_COMMAND}

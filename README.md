@@ -15,6 +15,9 @@ them talks to googletest directly.
   `TRUE`, `FALSE`, `EQ`, `NE`, `LT`, `LE`, `GT`, `GE`, `NEAR`, `THROW` and `NO_THROW`, a fixture base
   `vigine::unittest::Fixture`, and a `main` of its own that fixes googletest's options (no colour, fixed order, XML
   results into the folder named by `VIGINE_UNITTEST_RESULTS`).
+- Gives the helpers every repository's tests used to copy: `vigine::unittest::captureStdout` and
+  `capturedStdout` (beside `captureStderr` and `capturedStderr`), and `vigine::unittest::uniqueTemp(name)`, a path
+  under the temporary folder that no other test process shares, with the name's extension kept last.
 - Gives a CMake function, `vigine_unit_add_tests`, that makes the test program and lists its tests to ctest.
 
 ## How to use it
