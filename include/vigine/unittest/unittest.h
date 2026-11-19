@@ -2,6 +2,10 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
+#include <cstddef>
+#include <filesystem>
+#include <random>
 #include <string>
 
 namespace vigine::unittest
@@ -29,6 +33,24 @@ inline int randomSeed() { return ::testing::UnitTest::GetInstance()->random_seed
 inline void captureStderr() { ::testing::internal::CaptureStderr(); }
 
 inline std::string capturedStderr() { return ::testing::internal::GetCapturedStderr(); }
+
+inline void captureStdout() { ::testing::internal::CaptureStdout(); }
+
+inline std::string capturedStdout() { return ::testing::internal::GetCapturedStdout(); }
+
+// A path under the temporary folder that no other test process shares: ctest runs each case as its own process,
+// several at once, and two builds may test at the same time. The name's extension stays last. Nothing is created.
+[[nodiscard]] inline std::filesystem::path uniqueTemp(const std::string &name)
+{
+    const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
+    std::random_device entropy;
+    const std::string unique  = "_" + std::to_string(stamp) + "_" + std::to_string(entropy());
+    const std::size_t dot     = name.rfind('.');
+    const bool hasExtension   = dot != std::string::npos && dot != 0;
+    const std::string stem    = hasExtension ? name.substr(0, dot) : name;
+    const std::string ending  = hasExtension ? name.substr(dot) : std::string{};
+    return std::filesystem::temp_directory_path() / (stem + unique + ending);
+}
 }
 
 #define VIGINE_TEST(suite, name) TEST(suite, name)
